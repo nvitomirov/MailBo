@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-
+﻿using NUnit.Framework;
 
 namespace MailBoService.Tests
 {
     [TestFixture]
-    public class SignOnServiceTest
+    public class SignOnServiceTest : SignOnService
     {
 
         [Test]
@@ -24,8 +18,9 @@ namespace MailBoService.Tests
             //act
             var logged = service.Login(username, password);
 
-           //assert 
-           logged.Equals(true);
+            //assert 
+            Assert.IsNotNull(logged);
+            Assert.IsNotEmpty(logged);
         }
 
         [Test]
@@ -39,8 +34,8 @@ namespace MailBoService.Tests
             //act
             var logged = service.Login(username, password);
 
-           //assert 
-           logged.Equals(false);
+            //assert 
+            logged.Equals(false);
         }
 
 
@@ -48,12 +43,14 @@ namespace MailBoService.Tests
         public void GetNews_NotLoggedIn()
         {
             var service = new SignOnService();
+            var logged = service.Login("Max", "Max123");
 
             //act
-            var messages = service.GetNews();
-
+            var messages = service.GetNews(logged);
             //assert 
             messages.Equals(null);
         }
+
+
     }
 }

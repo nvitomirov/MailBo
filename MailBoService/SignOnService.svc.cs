@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using MailBoService.DataContracts;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -8,36 +9,62 @@ namespace MailBoService
     public class SignOnService : ISignOnService
     {
         private static ConcurrentDictionary<string, string> authenticated = new ConcurrentDictionary<string, string>();
+        private List<User> Users;
+        private List<Message> Messages;
 
-        public bool Login(string username, string password)
+        public SignOnService()
         {
-            var users = GetUsers();
-            if (users.Any(x => x.Username == username && x.Password == password))
-            {
-                var currentSessionId = OperationContext.Current.SessionId;
-                authenticated.TryAdd(currentSessionId, username);
-
-                return true;
-            }
-
-            return false;
+            Users = GetUsers();
+            Messages = GetMessages();
         }
 
-        public List<Message> GetNews()
+        public string Login(string username, string password)
         {
-            string name;
-
-            if (authenticated.TryGetValue(OperationContext.Current.SessionId, out name))
+            if (ValidateUserCredentials(username, password))
             {
-                return SavedNews().Where(x => x.Reciever == name && !x.Status).ToList();
+                SetSession(username);
+                return GetSession(username);
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
-        private List<Message> SavedNews()
+        public List<Message> GetNews(string session)
+        {
+            var username = GetUsername(session);
+            return Messages.Where(x => x.Reciever == username && !x.Status).ToList();
+        }
+
+        private void SetSession(string username)
+        {
+            var currentSessionId = OperationContext.Current.SessionId;
+            authenticated.TryAdd(currentSessionId, username);
+        }
+
+        private string GetSession(string username)
+        {
+            string session;
+            authenticated.TryGetValue(username, out session);
+            return session;
+        }
+
+        private string GetUsername(string session)
+        {
+            return authenticated.ToArray().FirstOrDefault(x => x.Value == session).Key;
+        }
+
+        private bool ValidateUserCredentials(string username, string password)
+        {
+            return Users.Any(x => x.Username == username && x.Password == password);
+        }
+
+        private string TryGetAuthenticatedUsername()
+        {
+            string name = null;
+            authenticated.TryGetValue(OperationContext.Current.SessionId, out name);
+            return name;
+        }
+
+        private List<Message> GetMessages()
         {
             return new List<Message>
             {

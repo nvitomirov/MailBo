@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
+﻿using MailBoService.DataContracts;
+using System.Collections.Generic;
 using System.ServiceModel;
 
 namespace MailBoService
@@ -9,47 +9,11 @@ namespace MailBoService
     {
 
         [OperationContract(IsInitiating = true)]
-        bool Login(string username, string password);
+        string Login(string username, string password);
 
         [OperationContract(IsInitiating = false)]
-        List<Message> GetNews();
+        List<Message> GetNews(string username);
 
 
-    }
-
-    [DataContract]
-    public class Message
-    {
-
-
-        [DataMember]
-        public bool Status
-        {
-            get; set;
-        }
-
-        [DataMember]
-        public string Sender
-        {
-            get; set;
-        }
-
-        [DataMember]
-        public string Reciever
-        {
-            get; set;
-        }
-
-        [DataMember]
-        public string Subject
-        {
-            get; set;
-        }
-
-        [DataMember]
-        public string MessageBody
-        {
-            get; set;
-        }
     }
 }
