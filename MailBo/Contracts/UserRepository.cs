@@ -2,7 +2,7 @@
 {
     public interface UserRepository
     {
-        bool Login(string username, string password);
-        string GetMessages(string username);
+        string Login(string username, string password);
+        string GetMessages(string sessionID);
     }
 }

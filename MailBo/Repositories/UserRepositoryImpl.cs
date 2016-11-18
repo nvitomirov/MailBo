@@ -7,20 +7,20 @@ namespace MailBo
     public class UserRepositoryImpl : UserRepository
     {
 
-        public bool Login(string username, string password)
+        public string Login(string username, string password)
         {
             using (var client = new MailBoServiceRef.SignOnServiceClient())
             {
-                return client.Login(username, password);
+                return client.Login(new MailBoServiceRef.Credentials() { Username=username, Password = password});
             }
         }
         
-        public  string GetMessages(string username)
+        public  string GetMessages(string sessionID)
         {
             var sb = new StringBuilder();
             using (var client = new MailBoServiceRef.SignOnServiceClient())
             {
-                var messages = client.GetNews();
+                var messages = client.GetNews( sessionID);
                 foreach (var message in messages)
                 {
                     sb.Append("Absender: ")

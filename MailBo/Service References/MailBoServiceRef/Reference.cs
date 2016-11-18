@@ -15,7 +15,68 @@ namespace MailBo.MailBoServiceRef {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Message", Namespace="http://schemas.datacontract.org/2004/07/MailBoService")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="Credentials", Namespace="http://schemas.datacontract.org/2004/07/MailBoService.DataContracts")]
+    [System.SerializableAttribute()]
+    public partial class Credentials : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string PasswordField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string UsernameField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Password {
+            get {
+                return this.PasswordField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.PasswordField, value) != true)) {
+                    this.PasswordField = value;
+                    this.RaisePropertyChanged("Password");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Username {
+            get {
+                return this.UsernameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.UsernameField, value) != true)) {
+                    this.UsernameField = value;
+                    this.RaisePropertyChanged("Username");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="Message", Namespace="http://schemas.datacontract.org/2004/07/MailBoService.DataContracts")]
     [System.SerializableAttribute()]
     public partial class Message : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
         
@@ -127,16 +188,22 @@ namespace MailBo.MailBoServiceRef {
     public interface ISignOnService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ISignOnService/Login", ReplyAction="http://tempuri.org/ISignOnService/LoginResponse")]
-        bool Login(string username, string password);
+        string Login(MailBo.MailBoServiceRef.Credentials credentials);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ISignOnService/Login", ReplyAction="http://tempuri.org/ISignOnService/LoginResponse")]
-        System.Threading.Tasks.Task<bool> LoginAsync(string username, string password);
+        System.Threading.Tasks.Task<string> LoginAsync(MailBo.MailBoServiceRef.Credentials credentials);
         
-        [System.ServiceModel.OperationContractAttribute(IsInitiating=false, Action="http://tempuri.org/ISignOnService/GetNews", ReplyAction="http://tempuri.org/ISignOnService/GetNewsResponse")]
-        MailBo.MailBoServiceRef.Message[] GetNews();
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ISignOnService/GetNews", ReplyAction="http://tempuri.org/ISignOnService/GetNewsResponse")]
+        MailBo.MailBoServiceRef.Message[] GetNews(string sessionId);
         
-        [System.ServiceModel.OperationContractAttribute(IsInitiating=false, Action="http://tempuri.org/ISignOnService/GetNews", ReplyAction="http://tempuri.org/ISignOnService/GetNewsResponse")]
-        System.Threading.Tasks.Task<MailBo.MailBoServiceRef.Message[]> GetNewsAsync();
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ISignOnService/GetNews", ReplyAction="http://tempuri.org/ISignOnService/GetNewsResponse")]
+        System.Threading.Tasks.Task<MailBo.MailBoServiceRef.Message[]> GetNewsAsync(string sessionId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ISignOnService/AddNews", ReplyAction="http://tempuri.org/ISignOnService/AddNewsResponse")]
+        bool AddNews(string sessionId, MailBo.MailBoServiceRef.Message newMessage);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ISignOnService/AddNews", ReplyAction="http://tempuri.org/ISignOnService/AddNewsResponse")]
+        System.Threading.Tasks.Task<bool> AddNewsAsync(string sessionId, MailBo.MailBoServiceRef.Message newMessage);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -166,20 +233,28 @@ namespace MailBo.MailBoServiceRef {
                 base(binding, remoteAddress) {
         }
         
-        public bool Login(string username, string password) {
-            return base.Channel.Login(username, password);
+        public string Login(MailBo.MailBoServiceRef.Credentials credentials) {
+            return base.Channel.Login(credentials);
         }
         
-        public System.Threading.Tasks.Task<bool> LoginAsync(string username, string password) {
-            return base.Channel.LoginAsync(username, password);
+        public System.Threading.Tasks.Task<string> LoginAsync(MailBo.MailBoServiceRef.Credentials credentials) {
+            return base.Channel.LoginAsync(credentials);
         }
         
-        public MailBo.MailBoServiceRef.Message[] GetNews() {
-            return base.Channel.GetNews();
+        public MailBo.MailBoServiceRef.Message[] GetNews(string sessionId) {
+            return base.Channel.GetNews(sessionId);
         }
         
-        public System.Threading.Tasks.Task<MailBo.MailBoServiceRef.Message[]> GetNewsAsync() {
-            return base.Channel.GetNewsAsync();
+        public System.Threading.Tasks.Task<MailBo.MailBoServiceRef.Message[]> GetNewsAsync(string sessionId) {
+            return base.Channel.GetNewsAsync(sessionId);
+        }
+        
+        public bool AddNews(string sessionId, MailBo.MailBoServiceRef.Message newMessage) {
+            return base.Channel.AddNews(sessionId, newMessage);
+        }
+        
+        public System.Threading.Tasks.Task<bool> AddNewsAsync(string sessionId, MailBo.MailBoServiceRef.Message newMessage) {
+            return base.Channel.AddNewsAsync(sessionId, newMessage);
         }
     }
 }

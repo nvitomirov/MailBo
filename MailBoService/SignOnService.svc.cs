@@ -1,8 +1,8 @@
 ﻿using MailBoService.DataContracts;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel;
 
 namespace MailBoService
 {
@@ -18,26 +18,39 @@ namespace MailBoService
             Messages = GetMessages();
         }
 
-        public string Login(string username, string password)
+        public string Login(Credentials credentials)
         {
-            if (ValidateUserCredentials(username, password))
+            if (ValidateUser(credentials))
             {
-                SetSession(username);
-                return GetSession(username);
+                SetSession(credentials.Username);
+                return GetSession(credentials.Username);
             }
             return null;
         }
 
-        public List<Message> GetNews(string session)
+        public ICollection<Message> GetNews(string session)
         {
             var username = GetUsername(session);
             return Messages.Where(x => x.Reciever == username && !x.Status).ToList();
         }
 
+        public bool AddNews(string session, Message newMessage)
+        {
+
+            Messages.Add(newMessage);
+            return true;
+        }
+
         private void SetSession(string username)
         {
-            var currentSessionId = OperationContext.Current.SessionId;
-            authenticated.TryAdd(currentSessionId, username);
+            var currentSessionId = Guid.NewGuid();
+            if (!IsUserLoggedIn(username))
+                authenticated.TryAdd(username, currentSessionId.ToString());
+        }
+
+        private bool IsUserLoggedIn(string username)
+        {
+            return !string.IsNullOrEmpty(GetSession(username));
         }
 
         private string GetSession(string username)
@@ -52,17 +65,11 @@ namespace MailBoService
             return authenticated.ToArray().FirstOrDefault(x => x.Value == session).Key;
         }
 
-        private bool ValidateUserCredentials(string username, string password)
+        private bool ValidateUser(Credentials credentials)
         {
-            return Users.Any(x => x.Username == username && x.Password == password);
+            return Users.Any(x => x.Username == credentials.Username && x.Password == credentials.Password);
         }
 
-        private string TryGetAuthenticatedUsername()
-        {
-            string name = null;
-            authenticated.TryGetValue(OperationContext.Current.SessionId, out name);
-            return name;
-        }
 
         private List<Message> GetMessages()
         {

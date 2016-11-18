@@ -95,6 +95,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataContracts\Credentials.cs" />
     <Compile Include="DataContracts\Message.cs" />
     <Compile Include="ISignOnService.cs" />
     <Compile Include="SignOnService.svc.cs">

@@ -1,22 +1,28 @@
-﻿using NUnit.Framework;
+﻿using MailBoService.DataContracts;
+using NUnit.Framework;
 
 namespace MailBoService.Tests
 {
     [TestFixture]
     public class SignOnServiceTest : SignOnService
     {
+        private SignOnService service;
+        private static Credentials credentials = new Credentials("Max", "Max123");
+
+        [SetUp]
+        public void InitializeSignOnService()
+        {
+            service = new SignOnService();
+        }
+
 
         [Test]
-        public void UserLogin_Successfull()
+        public void UserLogin_Successfull_ReturnsSessionID()
         {
-
             //arrange
-            var service = new SignOnService();
-            var username = "Max";
-            var password = "Max123";
-
+          
             //act
-            var logged = service.Login(username, password);
+            var logged = service.Login(credentials);
 
             //assert 
             Assert.IsNotNull(logged);
@@ -24,31 +30,51 @@ namespace MailBoService.Tests
         }
 
         [Test]
-        public void UserLogin_NotSuccessfull()
+        public void UserLogin_AllreadyLoggedIn_ReturnsUsedSessionID()
         {
             //arrange
-            var service = new SignOnService();
-            var username = "Max";
-            var password = "Max12";
-
+            var sessionID = service.Login(credentials);
             //act
-            var logged = service.Login(username, password);
+
+            var newSessionId =service.Login(credentials);
 
             //assert 
-            logged.Equals(false);
+            Assert.IsNotNull(newSessionId);
+            Assert.IsNotEmpty(newSessionId);
+            Assert.AreEqual(newSessionId, sessionID);
+        }
+
+        [Test]
+        public void UserLogin_NotSuccessfull_ReturnsNull()
+        {
+            //arrange
+            var falseCredentials = new Credentials("Max2112", "");
+            //act
+            var logged = service.Login(falseCredentials);
+
+            //assert 
+            Assert.IsNull(logged);
         }
 
 
         [Test]
-        public void GetNews_NotLoggedIn()
+        public void GetNews_NotLoggedIn_ReturnsNull()
         {
-            var service = new SignOnService();
-            var logged = service.Login("Max", "Max123");
+            //arrange
+            var logged = service.Login(credentials);
 
             //act
             var messages = service.GetNews(logged);
             //assert 
             messages.Equals(null);
+        }
+
+        [Test]
+        public void AddNews_Success()
+        {
+            var news = new Message();
+            var session = service.Login(credentials);
+            service.AddNews(session, news);
         }
 
 

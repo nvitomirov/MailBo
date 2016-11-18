@@ -4,16 +4,17 @@ using System.ServiceModel;
 
 namespace MailBoService
 {
-    [ServiceContract(SessionMode = SessionMode.Required)]
+    [ServiceContract]
     public interface ISignOnService
     {
 
-        [OperationContract(IsInitiating = true)]
-        string Login(string username, string password);
+        [OperationContract]
+        string Login(Credentials credentials);
 
-        [OperationContract(IsInitiating = false)]
-        List<Message> GetNews(string username);
+        [OperationContract]
+        ICollection<Message> GetNews(string sessionID);
 
-
+        [OperationContract]
+        bool AddNews(string sessionId, Message newMessage);
     }
 }
