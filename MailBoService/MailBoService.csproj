@@ -98,6 +98,9 @@
     <Compile Include="DataContracts\Credentials.cs" />
     <Compile Include="DataContracts\Message.cs" />
     <Compile Include="ISignOnService.cs" />
+    <Compile Include="Models\UserLogIn.cs" />
+    <Compile Include="Models\Message.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="SignOnService.svc.cs">
       <DependentUpon>SignOnService.svc</DependentUpon>
     </Compile>

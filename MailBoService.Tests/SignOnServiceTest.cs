@@ -56,25 +56,54 @@ namespace MailBoService.Tests
             Assert.IsNull(logged);
         }
 
+        [Test]
+        public void UserLogOut_RemovesUserSessionID_CreatesNewOnLogin()
+        {
+            //arrange
+            var sessionId = service.Login(credentials);
+            //act
+            service.LogOut(sessionId);
+
+            //assert 
+            Assert.IsNotNull(sessionId);
+        }
 
         [Test]
-        public void GetNews_NotLoggedIn_ReturnsNull()
+        public void GetNewMessages_NotLoggedIn_ReturnsNull()
         {
             //arrange
             var logged = service.Login(credentials);
 
             //act
-            var messages = service.GetNews(logged);
+            var messages = service.GetNewMessages(logged);
             //assert 
             messages.Equals(null);
         }
 
         [Test]
+        public void GetAllMessages_ReturnsList()
+        {
+            //arrange
+            var logged = service.Login(credentials);
+
+            //act
+            var messages = service.GetAllMessages(logged);
+            //assert 
+            Assert.IsNotNull(messages);
+        }
+
+        [Test]
         public void AddNews_Success()
         {
-            var news = new Message();
+            var news = new Message() {
+                MessageBody="",
+                Reciever = "Max1",
+            };
             var session = service.Login(credentials);
-            service.AddNews(session, news);
+            var sut = service.AddNews(session, news);
+
+            //assert
+            Assert.IsTrue(sut);
         }
 
 

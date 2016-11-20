@@ -1,8 +1,10 @@
 ﻿using MailBoService.DataContracts;
+using MailBoService.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Message = MailBoService.DataContracts.Message;
 
 namespace MailBoService
 {
@@ -28,10 +30,22 @@ namespace MailBoService
             return null;
         }
 
-        public ICollection<Message> GetNews(string session)
+        public void LogOut(string sessionId)
         {
-            var username = GetUsername(session);
+            RemoveSession(sessionId);
+        }
+
+
+        public ICollection<Message> GetNewMessages(string sessionID)
+        {
+            var username = GetUsername(sessionID);
             return Messages.Where(x => x.Reciever == username && !x.Status).ToList();
+        }
+
+        public ICollection<Message> GetAllMessages(string sessionID)
+        {
+            var username = GetUsername(sessionID);
+            return Messages.Where(x => x.Reciever == username).ToList();
         }
 
         public bool AddNews(string session, Message newMessage)
@@ -60,6 +74,13 @@ namespace MailBoService
             return session;
         }
 
+        private void RemoveSession(string sessionID)
+        {
+            var username = GetUsername(sessionID);
+            string value = string.Empty;
+            var removed = authenticated.TryRemove(username, out value);
+        }
+
         private string GetUsername(string session)
         {
             return authenticated.ToArray().FirstOrDefault(x => x.Value == session).Key;
@@ -78,13 +99,6 @@ namespace MailBoService
                 new Message { Sender ="Lucas", Reciever="Max", Subject ="Test", MessageBody ="Test 1", Status = false },
                 new Message { Sender ="Lucas", Reciever="Max",Subject ="Test", MessageBody ="Test 2",Status=false },
                 new Message { Sender ="Max", Reciever="Lucas",Subject ="Test", MessageBody ="Test sds1", Status = false },
-                new Message { Sender ="Max", Reciever="Lucas",Subject ="Test", MessageBody ="Test 14324" , Status=true},
-                new Message { Sender ="Max", Reciever="Lucas",Subject ="Test", MessageBody ="Test 143242" , Status=false },
-                new Message { Sender ="Max", Reciever="Lucas",Subject ="Test", MessageBody ="Test 432421", Status=true },
-                 new Message { Sender ="Max", Reciever="Lucas",Subject ="Test", MessageBody ="Test 432421", Status=false },
-                  new Message { Sender ="Max", Reciever="Lucas",Subject ="Test", MessageBody ="Test 432421", Status=true },
-                   new Message { Sender ="Max", Reciever="Lucas",Subject ="Test", MessageBody ="Test 432421", Status=false },
-                    new Message { Sender ="Max", Reciever="Lucas",Subject ="Test", MessageBody ="Test 432421" , Status=true},
             };
         }
 
@@ -98,9 +112,5 @@ namespace MailBoService
         }
     }
 
-    public class User
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-    }
+   
 }
